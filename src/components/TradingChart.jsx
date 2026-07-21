@@ -1,9 +1,7 @@
-import React, { useEffect, useRef } from 'react';
+import React from 'react';
 import { Activity } from 'lucide-react';
 
 export default function TradingChart({ timeframe, levels }) {
-  const containerRef = useRef(null);
-
   // Map timeframe to TradingView interval format
   const intervalMap = {
     '1m': '1',
@@ -16,59 +14,42 @@ export default function TradingChart({ timeframe, levels }) {
 
   const interval = intervalMap[timeframe] || '15';
 
-  useEffect(() => {
-    if (!containerRef.current) return;
-
-    // Clear previous widget
-    containerRef.current.innerHTML = '';
-
-    const widgetContainer = document.createElement('div');
-    widgetContainer.className = 'tradingview-widget-container__widget';
-    widgetContainer.style.height = '100%';
-    widgetContainer.style.width = '100%';
-    containerRef.current.appendChild(widgetContainer);
-
-    const script = document.createElement('script');
-    script.src = 'https://s3.tradingview.com/external-embedding/embed-widget-advanced-chart.js';
-    script.type = 'text/javascript';
-    script.async = true;
-    script.innerHTML = JSON.stringify({
-      "autosize": true,
-      "symbol": "OANDA:XAUUSD",
-      "interval": interval,
-      "timezone": "Etc/UTC",
-      "theme": "dark",
-      "style": "1",
-      "locale": "en",
-      "enable_publishing": false,
-      "allow_symbol_change": false,
-      "calendar": false,
-      "hide_volume": true,
-      "studies": [],
-      "support_host": "https://www.tradingview.com"
-    });
-
-    containerRef.current.appendChild(script);
-  }, [timeframe]);
+  // TradingView official embed URL for OANDA:XAUUSD
+  const iframeSrc = `https://www.tradingview-widget.com/embed-widget/advanced-chart/?symbol=OANDA%3AXAUUSD&interval=${interval}&theme=dark&style=1&timezone=Etc%2FUTC&hide_volume=true&locale=en#${encodeURIComponent(
+    JSON.stringify({
+      "page-uri": "https://www.tradingview.com",
+    })
+  )}`;
 
   return (
-    <div style={{ position: 'relative', width: '100%', height: '100%', display: 'flex', flexDirection: 'column', minHeight: '450px' }}>
+    <div style={{
+      position: 'relative',
+      width: '100%',
+      height: '100%',
+      minHeight: '520px',
+      display: 'flex',
+      flexDirection: 'column',
+      backgroundColor: '#131722',
+      borderRadius: '8px',
+      overflow: 'hidden'
+    }}>
       {/* Chart Ribbon Header */}
       <div style={{
         backgroundColor: 'var(--bg-secondary)',
         borderBottom: '1px solid var(--border-color)',
-        padding: '6px 12px',
+        padding: '8px 14px',
         display: 'flex',
         alignItems: 'center',
         justify: 'space-between',
-        fontSize: '12px'
+        fontSize: '12px',
+        zIndex: 10
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
           <span style={{ fontWeight: 700, color: 'var(--text-bright)', display: 'flex', alignItems: 'center', gap: '6px' }}>
-            <Activity size={14} className="text-gold" /> OANDA:XAUUSD Live TradingView Chart
+            <Activity size={15} className="text-gold" /> OANDA:XAUUSD Live TradingView Chart
           </span>
           <span className="badge badge-gold" style={{ fontSize: '10px' }}>
-            CLEAN ACTION (NO INDICATORS)
+            CLEAN PRICE ACTION
           </span>
         </div>
 
@@ -82,11 +63,22 @@ export default function TradingChart({ timeframe, levels }) {
         )}
       </div>
 
-      {/* Main OANDA TradingView Widget Canvas */}
-      <div style={{ flex: 1, width: '100%', height: '100%', minHeight: '420px', position: 'relative' }}>
-        <div 
-          ref={containerRef} 
-          style={{ width: '100%', height: '100%', minHeight: '420px' }} 
+      {/* Main OANDA TradingView Chart Frame */}
+      <div style={{ flex: 1, width: '100%', height: 'calc(100% - 36px)', minHeight: '480px', position: 'relative' }}>
+        <iframe
+          key={`${timeframe}-${interval}`}
+          title="OANDA XAUUSD TradingView Chart"
+          src={iframeSrc}
+          style={{
+            width: '100%',
+            height: '100%',
+            minHeight: '480px',
+            border: 'none',
+            display: 'block'
+          }}
+          allowTransparency={true}
+          scrolling="no"
+          allowFullScreen={true}
         />
       </div>
     </div>

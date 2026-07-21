@@ -103,10 +103,11 @@ export default function App() {
             display: 'grid',
             gridTemplateColumns: 'minmax(0, 1fr) 360px',
             gap: '12px',
-            height: 'calc(100vh - 120px)'
+            height: 'calc(100vh - 120px)',
+            minHeight: '650px'
           }}>
             {/* Center Main Trading Canvas */}
-            <div className="glass-panel" style={{ overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+            <div className="glass-panel" style={{ overflow: 'hidden', display: 'flex', flexDirection: 'column', height: '100%', minHeight: '520px' }}>
               <TradingChart
                 candles={candles}
                 latestTick={latestTick}
